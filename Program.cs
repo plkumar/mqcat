@@ -12,7 +12,7 @@ class Program
         
         rootCommand.AddCommand(new PublishCommand());
         rootCommand.AddCommand(new SubscribeCommand());
-
+        
         return await rootCommand.InvokeAsync(args);
     }
 }
