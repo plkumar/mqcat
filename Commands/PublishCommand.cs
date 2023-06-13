@@ -34,13 +34,15 @@ public class PublishCommand : Command
 
     void Publish(string host, string exchangeName, string routingKey, string message)
     {
-        var factory = new ConnectionFactory() { HostName = host };
+        System.Console.WriteLine($" {host}, {exchangeName}, {routingKey}");
+
+        var factory = new ConnectionFactory() { Uri=new Uri(host) };
         using (var connection = factory.CreateConnection())
         {
             using (var channel = connection.CreateModel())
             {
                 // Declare the exchange                
-                channel.ExchangeDeclare(exchange: exchangeName, type: ExchangeType.Direct);
+                channel.ExchangeDeclare(exchange: exchangeName, type: ExchangeType.Topic, true);
 
                 // Publish a message
                 byte[] body = Encoding.UTF8.GetBytes(message);
