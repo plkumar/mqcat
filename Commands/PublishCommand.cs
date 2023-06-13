@@ -9,10 +9,10 @@ public class PublishCommand : Command
 {
     private const int ErrorExitCode = -1;
     private readonly Option<string> hostOption = new(aliases: new[]  {"--host", "-h"}, description: "Host name to connect.");
-    private readonly Option<string> messageOption = new(aliases: new[]  {"--message", "-m"}, description: "Message to publish");
+    private readonly Option<string> messageOption = new(aliases: new[]  {"--message", "-m"}, description: "Message to publish.");
     private readonly Option<FileInfo> fileOption = new(aliases: new[]  {"--file", "--FILE", "-f"}, description: "File path, contents of the file will be published.");
-    private readonly Option<string> exchangeOption = new(aliases: new[]  {"--exchange", "-e"}, description: "Message to publish");
-    private readonly Option<string> routingKeyOption = new(aliases: new[]  {"--routing-key", "-r"}, description: "Message to publish");
+    private readonly Option<string> exchangeOption = new(aliases: new[]  {"--exchange", "-e"}, description: "Name of exchange to publish into.");
+    private readonly Option<string> routingKeyOption = new(aliases: new[]  {"--routing-key", "-r"}, description: "Routing key to publish message.");
 
     public PublishCommand() : base("publish", "Publishes messages to queue")
     {
