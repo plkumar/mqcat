@@ -11,7 +11,7 @@
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
             "program": "${workspaceFolder}/bin/Debug/net7.0/mqcat.dll",
-            "args": ["publish -h amqp://guest:guest@127.0.0.1 -e demo-exchange -r /temp/1 -m \"{ 'temp':35 }\""],
+            "args": ["publish", "-h amqp://guest:guest@127.0.0.1", "-e demo-exchange", "-r /temp/1", "-m \"{ 'temp':35 }\""],
             "cwd": "${workspaceFolder}",
             // For more information about the 'console' field, see https://aka.ms/VSCode-CS-LaunchJson-Console
             "console": "internalConsole",

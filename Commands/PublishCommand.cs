@@ -55,8 +55,5 @@ public class PublishCommand : Command
                 Console.WriteLine("Message sent: {0}", message);
             }
         }
-
-        Console.WriteLine("Press any key to exit...");
-        Console.ReadLine();
     }
 }
