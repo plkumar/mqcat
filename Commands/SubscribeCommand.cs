@@ -30,23 +30,21 @@ public class SubscribeCommand : Command
         var factory = new ConnectionFactory() { Uri = new Uri(host) };
         using (var connection = factory.CreateConnection())
         {
-            using (var channel = connection.CreateModel())
+            using var channel = connection.CreateModel();
+            channel.QueueDeclare(queue: queueName, durable: isDurable, exclusive: false, autoDelete: false, arguments: null);
+
+            // Set up a consumer to receive messages
+            var consumer = new EventingBasicConsumer(channel);
+            consumer.Received += (_, ea) =>
             {
-                channel.QueueDeclare(queue: queueName, durable: isDurable, exclusive: false, autoDelete: false, arguments: null);
+                byte[] body = ea.Body.ToArray();
+                string message = Encoding.UTF8.GetString(body);
+                Console.WriteLine("Received message: {0}", message);
+            };
 
-                // Set up a consumer to receive messages
-                var consumer = new EventingBasicConsumer(channel);
-                consumer.Received += (_, ea) =>
-                {
-                    byte[] body = ea.Body.ToArray();
-                    string message = Encoding.UTF8.GetString(body);
-                    Console.WriteLine("Received message: {0}", message);
-                };
-
-                // channel.QueueBind(queueName, "demo-exchange", "/temp/#");
-                // Start consuming messages from the queue
-                channel.BasicConsume(queue: queueName, autoAck: true, consumer: consumer);
-            }
+            // channel.QueueBind(queueName, "demo-exchange", "/temp/#");
+            // Start consuming messages from the queue
+            channel.BasicConsume(queue: queueName, autoAck: true, consumer: consumer);
         }
 
         Console.WriteLine("Press any key to exit...");
