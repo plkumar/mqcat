@@ -1,6 +1,4 @@
 using System.CommandLine;
-using System.CommandLine.Completions;
-using System.CommandLine.Parsing;
 using System.Text;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
@@ -31,7 +29,7 @@ public class SubscribeCommand : Command
 
     private void Subscribe(string host, string queueName, bool isDurable)
     {
-        var factory = new ConnectionFactory() { HostName = host };
+        var factory = new ConnectionFactory() { Uri = new Uri(host) };
         using (var connection = factory.CreateConnection())
         {
             using (var channel = connection.CreateModel())
@@ -47,9 +45,9 @@ public class SubscribeCommand : Command
                     Console.WriteLine("Received message: {0}", message);
                 };
 
+                channel.QueueBind(queueName, "demo-exchange", "/temp/#");
                 // Start consuming messages from the queue
                 channel.BasicConsume(queue: queueName, autoAck: true, consumer: consumer);
-
             }
         }
 

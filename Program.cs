@@ -1,7 +1,5 @@
 ﻿using System.CommandLine;
-using System.Text;
 using mqcat.Commands;
-using RabbitMQ.Client;
 
 namespace mqcat;
 
