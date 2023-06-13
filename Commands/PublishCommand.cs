@@ -8,31 +8,41 @@ namespace mqcat.Commands;
 
 public class PublishCommand : Command
 {
+    private readonly Option<string> hostOption = new(aliases: new string[]  {"--host", "-h"}, description: "Host name to connect.");
     private readonly Option<string> messageOption = new(aliases: new string[]  {"--message", "-m"}, description: "Message to publish");
+    private readonly Option<string> exchangeOption = new(aliases: new string[]  {"--exchange", "-e"}, description: "Message to publish");
+    private readonly Option<string> routingKeyOption = new(aliases: new string[]  {"--routing-key", "-r"}, description: "Message to publish");
 
     public PublishCommand() : base("publish", "Publishes messages to queue")
     {
+        hostOption.IsRequired=true;
+        this.AddOption(hostOption);
+        
+        exchangeOption.IsRequired=true;
+        this.AddOption(exchangeOption);
+        
+        routingKeyOption.IsRequired=true;
+        this.AddOption(routingKeyOption);
+
         messageOption.IsRequired=true;
         this.AddOption(messageOption);
-        this.SetHandler<string>((message)=>{
-            Publish(message);
-        }, messageOption);
+       
+        this.SetHandler<string, string, string, string>((host, exchange, routingKey,message)=>{
+            Publish(host,exchange, routingKey, message);
+        }, hostOption, exchangeOption, routingKeyOption, messageOption);
     }
 
-    void Publish(string message)
+    void Publish(string host, string exchangeName, string routingKey, string message)
     {
-        var factory = new ConnectionFactory() { HostName = "localhost" };
+        var factory = new ConnectionFactory() { HostName = host };
         using (var connection = factory.CreateConnection())
         {
             using (var channel = connection.CreateModel())
             {
-                // Declare the exchange
-                string exchangeName = "my_exchange";
+                // Declare the exchange                
                 channel.ExchangeDeclare(exchange: exchangeName, type: ExchangeType.Direct);
 
                 // Publish a message
-                string routingKey = "my_routing_key";
-                //string message = "Hello, RabbitMQ!";
                 byte[] body = Encoding.UTF8.GetBytes(message);
 
                 channel.BasicPublish(exchange: exchangeName,
