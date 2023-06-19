@@ -7,27 +7,27 @@ namespace mqcat.Commands;
 
 public class SubscribeCommand : Command
 {
-    private readonly Option<string> hostOption = new(aliases: new[]  {"--host", "--ho"}, description: "Host name to connect.");
-    private readonly Option<string> queueOption = new(aliases: new[]  {"--queue", "-q"}, description: "Queue name to publish message into.");
-    private readonly Option<bool> isDurableOption = new(aliases: new[] {"--durable", "-d"}, "Is queue durable.");
-    private readonly Option<bool> waitOption = new(aliases: new[] {"--wait", "-w"}, "should command wait for new messages.");
+    private readonly Option<string> _hostOption = new(aliases: new[]  {"--host", "--ho"}, description: "Host name to connect.");
+    private readonly Option<string> _queueOption = new(aliases: new[]  {"--queue", "-q"}, description: "Queue name to publish message into.");
+    private readonly Option<bool> _isDurableOption = new(aliases: new[] {"--durable", "-d"}, "Is queue durable.");
+    private readonly Option<bool> _waitOption = new(aliases: new[] {"--wait", "-w"}, "should command wait for new messages.");
     
-    private bool keepRunning=true;
+    private bool _keepRunning=true;
     
     public SubscribeCommand() : base("subscribe", "Subscribes to message queue.")
     {
-        hostOption.IsRequired=true;
-        this.AddOption(hostOption);
-        queueOption.IsRequired=true;
-        this.AddOption(queueOption);
+        _hostOption.IsRequired=true;
+        this.AddOption(_hostOption);
+        _queueOption.IsRequired=true;
+        this.AddOption(_queueOption);
 
-        isDurableOption.SetDefaultValue(value: false);
-        this.AddOption(isDurableOption);
+        _isDurableOption.SetDefaultValue(value: false);
+        this.AddOption(_isDurableOption);
 
-        waitOption.SetDefaultValue(false);
-        this.AddOption(waitOption);
+        _waitOption.SetDefaultValue(value: false);
+        this.AddOption(_waitOption);
         
-        this.SetHandler(handle: Subscribe, hostOption, queueOption, isDurableOption, waitOption);
+        this.SetHandler(handle: Subscribe, _hostOption, _queueOption, _isDurableOption, _waitOption);
     }
 
     private void Subscribe(string host, string queueName, bool isDurable, bool shouldWait)
@@ -53,7 +53,7 @@ public class SubscribeCommand : Command
                 {
                     Console.WriteLine("Closing Connection.");
                     e.Cancel = true;
-                    this.keepRunning = false;
+                    this._keepRunning = false;
                 };
 
                 // channel.QueueBind(queueName, "demo-exchange", "/temp/#");
@@ -63,10 +63,13 @@ public class SubscribeCommand : Command
                 if (shouldWait)
                 {
                     Console.WriteLine("Waiting for new messages, Press Ctrl+C to exit...");
-                    while (keepRunning && channel.IsOpen) Thread.Sleep(2);
+                    while (_keepRunning && channel.IsOpen) Thread.Sleep(2);
                 }
-                
-                Thread.Sleep(500);
+                else
+                {
+                    // wait for sometime before closing to complete reading messages.
+                    Thread.Sleep(500);    
+                }
                 connection.Close();
             }
         }
