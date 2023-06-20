@@ -1,12 +1,13 @@
 using System.CommandLine;
 using System.Text;
 using mqcat.Bindings;
+using mqcat.Client;
 using mqcat.Util;
 using RabbitMQ.Client;
 
 namespace mqcat.Commands;
 
-public class PublishCommand : Command
+public sealed class PublishCommand : Command
 {
     private const int ErrorExitCode = -1;
     private readonly Option<string> _hostUriOption = new(aliases: new[] { "--host", "--ho" }, description: "Host uri to connect.");
@@ -21,8 +22,8 @@ public class PublishCommand : Command
     private readonly Option<FileInfo> _fileOption = new(aliases: new[] { "--file", "--FILE", "-f" }, description: "File path, contents of the file will be published.");
     private readonly Option<string> _exchangeOption = new(aliases: new[] { "--exchange", "-e" }, description: "Message to publish");
     private readonly Option<string> _routingKeyOption = new(aliases: new[] { "--routing-key", "-r" }, description: "Message to publish");
-    private readonly Option<Boolean> _peerVerifyOption =
-        new(aliases: new[] { "--disable-ssl-verify", "--dsv", "-d" }, "Disable SSL peer verify.");
+    // private readonly Option<Boolean> _peerVerifyOption =
+    //     new(aliases: new[] { "--disable-ssl-verify", "--dsv", "-d" }, "Disable SSL peer verify.");
 
     public PublishCommand() : base("publish", "Publishes messages to queue")
     {
@@ -53,57 +54,32 @@ public class PublishCommand : Command
         _fileOption.IsRequired = false;
         this.AddOption(_fileOption);
 
-        _peerVerifyOption.IsRequired = false;
-        _peerVerifyOption.SetDefaultValue(value: false);
-        this.AddOption(_peerVerifyOption);
+        // _peerVerifyOption.IsRequired = false;
+        // _peerVerifyOption.SetDefaultValue(value: false);
+        // this.AddOption(_peerVerifyOption);
 
-        this.SetHandler(Publish, _hostUriOption, new HostBinder(_serverOption, _portOption, _vhostOption, _usernameOption, _passwordOption), _exchangeOption, _routingKeyOption, _messageOption, _fileOption, _peerVerifyOption);
+        this.SetHandler(Publish, _hostUriOption, new HostBinder(_serverOption, _portOption, _vhostOption, _usernameOption, _passwordOption), _exchangeOption, _routingKeyOption, _messageOption, _fileOption);
     }
 
-    Task<int> Publish(string hostUri, Host server, string exchangeName, string routingKey, string message, FileInfo? fileInfo, bool peerVerifyDisabled)
+    Task<int> Publish(string hostUri, Host host, string exchangeName, string routingKey, string message, FileInfo? fileInfo)
     {
-        Utils.LogInfo($" {hostUri}, {exchangeName}, {routingKey}");
+        ConnectionFactory? factory = null;
 
-        var factory = new ConnectionFactory();
-
-        // var sslSettings = new SslOption
-        // {
-        //     Enabled = true,
-        //     ServerName = hostUri.DnsSafeHost,
-        //     Version = SslProtocols.Tls12
-        // };
-        //
-
-        if (peerVerifyDisabled)
+        if (string.IsNullOrEmpty(hostUri))
         {
-            factory.Ssl.CertificateValidationCallback += (sender, certificate, chain, errors) =>
+            if (string.IsNullOrEmpty(host.ServerName))
             {
-                return true;
-            };
-        }
-
-        if (!string.IsNullOrEmpty(hostUri))
-        {
-            factory.Uri = new Uri(hostUri);
-        }
-        else if (!string.IsNullOrEmpty(server.ServerName))
-        {
-            factory.HostName = server.ServerName;
-            factory.Port = server.Port;
+                Utils.LogError("neither --host nor --server supplied, one of them is mandatory.");
+                Task.FromResult(ErrorExitCode);
+            }
+            else
+            {
+                factory = AMQPClient.GetConnectionFactory(host);
+            }
         }
         else
         {
-            Utils.LogError("neither --host nor --server supplied, one of them is mandatory.");
-        }
-
-        if (!string.IsNullOrEmpty(server.UserName))
-        {
-            factory.UserName = server.UserName;
-            if(string.IsNullOrEmpty(server.Password))
-            {
-                server.Password = Utils.ReadPassword();
-            }
-            factory.Password = server.Password;
+            factory = AMQPClient.GetConnectionFactory(hostUri);
         }
 
         using var connection = factory.CreateConnection();

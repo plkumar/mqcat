@@ -46,3 +46,9 @@ jobs:
           .\.sonar\scanner\dotnet-sonarscanner begin /k:"plkumar_mqcat" /o:"plkumar" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
           dotnet build
           .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
+      - name: Build Publish
+        run: |
+          dotnet restore
+          dotnet build --configuration Release --no-restore
+          dotnet publish -c Release -o ../mqcat-linux-x64 -r linux-x64 --self-contained true
+    

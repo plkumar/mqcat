@@ -1,3 +1,7 @@
 {
-    "dotnet.defaultSolution": "mqcat.sln"
+    "dotnet.defaultSolution": "mqcat.sln",
+    "sonarlint.connectedMode.project": {
+        "connectionId": "plkumar",
+        "projectKey": "plkumar_mqcat"
+    }
 }
