@@ -60,7 +60,7 @@ public sealed class SubscribeCommand : Command
             if (string.IsNullOrEmpty(host.ServerName))
             {
                 Utils.LogError("neither --host nor --server supplied, one of them is mandatory.");
-                return Task.FromResult(-1);
+                return Task.FromResult(Constants.ErrorExitCode);
             }
             else
             {
@@ -70,6 +70,12 @@ public sealed class SubscribeCommand : Command
         else
         {
             factory = AMQPClient.GetConnectionFactory(hostUri);
+        }
+        
+        if(factory == null)
+        {
+            Utils.LogError("Failed to create connection factory.");
+            return Task.FromResult(Constants.ErrorExitCode);
         }
 
         using (var connection = factory.CreateConnection())

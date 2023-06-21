@@ -5,7 +5,7 @@ using RabbitMQ.Client;
 
 namespace mqcat.Client;
 
-class AMQPClient
+static class AMQPClient
 {
     public static ConnectionFactory GetConnectionFactory(string host) => new() { Uri = new Uri(host) };
 
