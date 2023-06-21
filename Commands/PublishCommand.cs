@@ -9,7 +9,6 @@ namespace mqcat.Commands;
 
 public sealed class PublishCommand : Command
 {
-    private const int ErrorExitCode = -1;
     private readonly Option<string> _hostUriOption = new(aliases: new[] { "--host", "--ho" }, description: "Host uri to connect.");
 
     private readonly Option<string> _serverOption = new(aliases: new[] { "--server", "-S", "-s" }, description: "Server name to connect.");
@@ -63,14 +62,14 @@ public sealed class PublishCommand : Command
 
     Task<int> Publish(string hostUri, Host host, string exchangeName, string routingKey, string message, FileInfo? fileInfo)
     {
-        ConnectionFactory? factory = null;
+        ConnectionFactory? factory;
 
         if (string.IsNullOrEmpty(hostUri))
         {
             if (string.IsNullOrEmpty(host.ServerName))
             {
                 Utils.LogError("neither --host nor --server supplied, one of them is mandatory.");
-                return Task.FromResult(ErrorExitCode);
+                return Task.FromResult(Constants.ErrorExitCode);
             }
             else
             {
@@ -82,18 +81,24 @@ public sealed class PublishCommand : Command
             factory = AMQPClient.GetConnectionFactory(hostUri);
         }
 
+        if(factory == null)
+        {
+            Utils.LogError("Failed to create connection factory.");
+            return Task.FromResult(Constants.ErrorExitCode);
+        }
+
         using var connection = factory.CreateConnection();
 
         if (string.IsNullOrEmpty(message) && fileInfo == null && !Console.IsInputRedirected)
         {
             Utils.LogError("Neither message nor file argument specified and no input redirection detected.");
-            Environment.Exit(ErrorExitCode);
+            Environment.Exit(Constants.ErrorExitCode);
         }
 
         if (string.IsNullOrEmpty(message) && Console.IsInputRedirected)
         {
             Console.SetIn(new StreamReader(Console.OpenStandardInput(8192))); // This will allow input >256 chars
-            if (Console.In.Peek() != -1)
+            if (Console.In.Peek() != Constants.EOF)
             {
                 message = Console.In.ReadToEnd();
             }
