@@ -60,7 +60,7 @@ public sealed class SubscribeCommand : Command
             if (string.IsNullOrEmpty(host.ServerName))
             {
                 Utils.LogError("neither --host nor --server supplied, one of them is mandatory.");
-                Task.FromResult(-1);
+                return Task.FromResult(-1);
             }
             else
             {

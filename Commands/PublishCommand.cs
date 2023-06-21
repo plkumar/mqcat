@@ -70,7 +70,7 @@ public sealed class PublishCommand : Command
             if (string.IsNullOrEmpty(host.ServerName))
             {
                 Utils.LogError("neither --host nor --server supplied, one of them is mandatory.");
-                Task.FromResult(ErrorExitCode);
+                return Task.FromResult(ErrorExitCode);
             }
             else
             {
