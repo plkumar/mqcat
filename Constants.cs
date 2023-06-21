@@ -1,5 +1,4 @@
-using System.Reflection.Metadata;
-
+namespace mqcat;
 static class Constants {
     public  const int ErrorExitCode = -1;
     public  const int SuccessExitCode = 0;
