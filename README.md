@@ -30,21 +30,38 @@ Publish a message to a queue.
 mqcat publish [options]
 ```
 
-##### Options
+#### Options
 
-| Option | Description | Default |
-| --- | --- | --- |
-| -h, --host | AMQP Broker host | localhost |
-| -p, --port | AMQP Broker port | 5672 |
-| -u, --user | AMQP Broker user | guest |
-| -P, --password | AMQP Broker password | guest |
-| -q, --queue | Queue name | |
-| -m, --message | Message to publish | |
-| -f, --file | File to publish | |
-| -e, --exchange | Exchange name | |
-| -r, --routing-key | Routing key | |
-|--- | --- | --- |
+---
 
+| Option | Description | 
+| --- | --- |
+|  --ho, --host <amqp://guest:guest@127.0.0.1:5672[/vhost]> | Host uri to connect.|
+|  -S, -s, --server <localhost>                             | Server name to connect. |
+|  -P, --port <port>                                        | Port number to connect. [default: 5672] |
+|  -V, -v, --vhost </|/vhost1>                              | vhost to connect. [default: /] |
+|  -u, --user <user>                                        | Host name to connect. |
+|  -p, --password <password>                                | Host name to connect. |
+|  -e, --exchange <exchange> (REQUIRED)                     | Message to publish |
+|  -r, --routing-key <routing-key> (REQUIRED)               | Message to publish |
+|  -m, --message <message>                                  | Message to publish |
+|  -f, --file, --FILE <file>                                | File path, contents of the file will be published. |
+|  -?, -h, --help                                           | Show help and usage information |
+
+#### Examples
+```bash
+mqcat publish -e myexchange -r myroutingkey -m "Hello World"
+```
+
+```bash
+mqcat publish -e myexchange -r myroutingkey -f /path/to/file
+```
+
+```bash
+mqcat publish -e myexchange -r myroutingkey -m "Hello World" -S localhost -P 5672 -V / -u guest -p guest
+```
+
+---
 #### subscribe
 
 Subscribe to a queue and print messages to stdout.
@@ -55,19 +72,35 @@ mqcat subscribe [options]
 
 ##### Options
 
-| Option | Description | Default |
-| --- | --- | --- |
-| -h, --host | AMQP Broker host | localhost |
-| -p, --port | AMQP Broker port | 5672 |
-| -u, --user | AMQP Broker user | guest |
-| -P, --password | AMQP Broker password | guest |
-| -q, --queue | Queue name | |
-| -e, --exchange | Exchange name | |
-| --- | --- | --- |
+| Option | Description |
+| --- | --- |
+| --ho, --host <host> (REQUIRED)  | Host name to connect.|
+|  -S, -s, --server <localhost>   | Server name to connect.|
+|  -P, --port <port>              | Port number to connect. [default: 5672]|
+|  -V, -v, --vhost </|/vhost1>    | vhost to connect. [default: /]|
+|  -u, --user <user>              | Host name to connect.|
+|  -p, --password <password>      | Host name to connect.|
+|  -q, --queue <queue> (REQUIRED) | Queue name to publish message into.|
+|  -d, --durable                  | Is queue durable. [default: False]|
+|  -w, --wait                     | should command wait for new messages. [default: False]|
+|  -?, -h, -|-help                | Show help and usage information|
+
+
+#### Examples
+```bash
+mqcat subscribe -q myqueue
+```
+
+```bash
+mqcat subscribe -q myqueue -w
+```
+
+```bash
+mqcat subscribe -q myqueue -S localhost -P 5672 -V / -u guest -p guest
+```
 
 ## License
 
 MIT
-``` 
-```
+
 
