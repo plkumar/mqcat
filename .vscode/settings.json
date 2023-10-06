@@ -1,5 +1,10 @@
 {
     "dotnet.defaultSolution": "mqcat.sln",
+    "sonarlint.connectedMode.project": {
+        "connectionId": "plkumar",
+        "projectKey": "plkumar_mqcat"
+    }
+    "dotnet.defaultSolution": "mqcat.sln",
     "github.copilot.enable":{
         "*": true,
         "plaintext": false,

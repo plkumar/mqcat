@@ -3,7 +3,7 @@ using mqcat.Commands;
 
 namespace mqcat;
 
-class Program
+public static class Program
 {
     static async Task<int> Main(string[] args)
     {
