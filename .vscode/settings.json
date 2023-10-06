@@ -2,13 +2,11 @@
     "dotnet.defaultSolution": "mqcat.sln",
     "sonarlint.connectedMode.project": {
         "connectionId": "plkumar",
-        "projectKey": "plkumar_mqcat"
+        "projectKey": "plkumar_mqcat",
+        "github.copilot.enable": {
+            "*": true,
+            "plaintext": false,
+            "markdown": false,
+            "scminput": false
+        }
     }
-    "dotnet.defaultSolution": "mqcat.sln",
-    "github.copilot.enable":{
-        "*": true,
-        "plaintext": false,
-        "markdown": false,
-        "scminput": false
-    }
-}
