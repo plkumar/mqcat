@@ -1,3 +1,9 @@
 {
-    "dotnet.defaultSolution": "mqcat.sln"
+    "dotnet.defaultSolution": "mqcat.sln",
+    "github.copilot.enable":{
+        "*": true,
+        "plaintext": false,
+        "markdown": false,
+        "scminput": false
+    }
 }
