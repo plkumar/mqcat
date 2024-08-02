@@ -62,7 +62,7 @@ public sealed class PublishCommand : Command
 
     Task<int> Publish(string hostUri, Host host, string exchangeName, string routingKey, string message, FileInfo? fileInfo)
     {
-        ConnectionFactory? factory;
+        ConnectionFactory factory;
 
         if (string.IsNullOrEmpty(hostUri))
         {
